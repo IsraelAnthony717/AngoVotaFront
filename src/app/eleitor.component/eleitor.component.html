@@ -1,0 +1,92 @@
+<video #bgVideo autoplay muted loop id="bg-video">
+  <source src="../../assets/videoVoto.mp4" type="video/mp4">
+  Seu navegador não suporta video.
+</video>
+
+<div class="urna-elegante">
+  <section class="slides-container">
+    <!-- Slide de introdução -->
+    <div class="slide intro">
+      <div class="conteudo-centro">
+        <h1 class="titulo-intro">
+          <div class="conteudois">
+           <h1>Candidatos<br>
+
+                        <span class="outline">Desponíveis</span>
+                </h1><hr>
+         </div>
+          <span class="linha1">Eleições </span>
+          <span class="linha2">Gerais 2027</span>
+        </h1>
+        <p class="subtitulo">Conheça os candidatos</p>
+        <div class="scroll-hint">
+          <span></span>
+          <span>deslize ⟶</span>
+        </div>
+      </div>
+      <div class="overlay-intro"></div>
+    </div>
+
+    <!-- Slides dos candidatos (dinâmico) -->
+    <ng-container *ngIf="candidatos.length > 0; else semCandidatos">
+      <div
+        *ngFor="let c of candidatos; let i = index"
+        class="slide candidato-slide"
+        [class.invertido]="i % 2 !== 0"
+        [style.background-image]="'linear-gradient(rgba(10, 12, 18, 0.7)),
+        url(' + (c.foto || 'assets/default-avatar.png') + ')'"
+      >
+        <div class="grid-candidato">
+          <!-- Coluna de texto -->
+          <div class="coluna-texto">
+            <div class="etiqueta">
+              <span class="numero">{{ i + 1 | number:'2.0' }}</span>
+              <span class="partido" [style.background]="c.cor">{{ c.abrevpartido }}</span>
+            </div>
+            <h2 class="nome-candidato">{{ c.nome }}</h2>
+            <p class="idade-partido">{{ c.idade }} anos · {{ c.partido }}</p>
+            <div class="descricao-glass">
+              <p>{{ c.descricao }}</p>
+            </div>
+            <button class="btn-votar-elegante" (click)="votar(c)">
+              <span>Votar</span>
+              <span class="seta">→</span>
+            </button>
+          </div>
+
+          <!-- Coluna de imagem -->
+          <div class="coluna-imagem">
+            <div class="moldura-imagem">
+              <img [src]="c.foto || 'assets/default-avatar.png'" [alt]="c.nome" />
+              <div class="imagem-overlay"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Elemento decorativo de fundo -->
+        <div class="fundo-gradiente"></div>
+      </div>
+    </ng-container>
+
+    <!-- Slide vazio (caso não haja candidatos) -->
+    <ng-template #semCandidatos>
+      <div class="slide vazio">
+        <div class="mensagem-vazio">
+          <h2>Nenhum candidato registrado</h2>
+          <p>Aguardando divulgação oficial</p>
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- Slide final -->
+    <div class="slide final">
+      <div class="conteudo-final">
+        <h2>AngoVota 2027</h2>
+        <p>Faça sua escolha com consciência</p>
+        <button class="btn-final" (click)="alert('Votação encerrada')">
+          Prosseguir
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

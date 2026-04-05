@@ -1,0 +1,195 @@
+<body class="dark">
+    <div class="flex min-h-screen w-full overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="flex-shrink-0 flex flex-col z-20">
+            <div class="p-6 flex items-center gap-3" style="border-bottom: 1px solid rgba(30, 41, 59, 0.5);">
+                <div class="flex items-center justify-center" style="width: 2rem; height: 2rem; border-radius: 0.25rem; background-color: var(--primary); color: white;"></div>
+                <h1 style="color: white; font-weight: bold; font-size: 1.125rem; letter-spacing: -0.025em;">CNE Premium</h1>
+            </div>
+            <nav class="flex-1 overflow-y-auto py-4 px-3" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <div style="margin-bottom: 1.5rem; padding: 0.75rem; display: flex; align-items: center; gap: 0.75rem; background-color: rgba(30, 41, 59, 0.5); border-radius: 0.75rem; border: 1px solid rgba(51, 65, 85, 0.5);">
+                    <div style="height: 2.5rem; width: 2.5rem; border-radius: 9999px; background-size: cover; background-position: center; background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB34Eh-D1bznrmKybOPIVbnVTaXJdAbfyY9l8F7SY9KpMj7hqvIuC-wi5aSgF6OZycUcC5pH4XP8nVamEZ54W-XFFylVIpniO1CfJ05g8R0Pg_bTueQty4pfWdCUc69r4bOceZKb9JkD_opscjLeyKI8UwcdnMx-9JS6ol9_JFRrnAUbijtzXFdnFkP6OLXJAUVK4_ebvPMonlzIWie9LOfmnbE8IXZE8H19qlN5k9qQLP0uy-oQl5nCr2sc1ZdPMOYxzBoNtR2vxZa')"></div>
+                    <div class="flex flex-col">
+                        <span style="font-size: 0.875rem; font-weight: 600; color: white;">Admin Logado</span>
+                        <span style="font-size: 0.75rem; color: var(--slate-400);">Nível 5 - Supremo</span>
+                    </div>
+                </div>
+
+                <a routerLink="/dashboard" class="nav-item"><span style="font-weight: 500;">Dashboard</span></a>
+                <a routerLink="/eleitores" class="nav-item"><span style="font-weight: 500;">Eleitores</span></a>
+                <a routerLink="/relatorio" class="nav-item"><span style="font-weight: 500;">Relatórios</span></a>
+            </nav>
+
+            <div class="p-4" style="border-top: 1px solid var(--slate-800);">
+                <button class="btn-secondary" style="width: 100%; justify-content: center;">Sair do Sistema</button>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <div class="status-bar px-6 py-2 flex items-center justify-between z-10">
+                <div class="flex items-center gap-2" style="color: var(--amber-500);">
+                    <span style="font-size: 0.875rem; font-weight: bold; text-transform: uppercase;">Eleições em Curso — Resultados Bloqueados</span>
+                </div>
+                <div class="flex items-center gap-4" style="font-size: 0.75rem; font-family: monospace; color: rgba(245, 158, 11, 0.8);">
+                    <span>STATUS: RESTRITO</span>
+                    <span style="height: 0.25rem; width: 0.25rem; border-radius: 9999px; background-color: var(--amber-500);"></span>
+                    <span>PROTOCOLO: V1-SECURE</span>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 lg:p-10" style="display: flex; flex-direction: column; gap: 2rem;">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 style="font-size: 1.875rem; font-weight: bold; color: white; letter-spacing: -0.025em;">Lista Oficial de Candidatos</h1>
+                        <p style="color: var(--slate-400); margin-top: 0.25rem;">Gerencie e visualize os perfis dos candidatos registrados. Contagem de votos oculta.</p>
+                    </div>
+                    <div class="search-container md:w-96">
+                        <span style="position: absolute; inset-y: 0; left: 0; display: flex; align-items: center; padding-left: 0.75rem; color: var(--slate-500);"></span>
+                        <input type="text" class="search-input" placeholder="Buscar candidato ou partido...">
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="card-stat flex items-center justify-between">
+                        <div>
+                            <p style="color: var(--slate-400); font-size: 0.75rem; font-weight: bold; text-transform: uppercase;">Total Registrados</p>
+                            <p style="font-size: 1.5rem; font-weight: bold; color: white;">{{vetor.length}}</p>
+                        </div>
+                        <div class="p-2" style="background-color: var(--slate-800); border-radius: 0.5rem; color: var(--slate-400);"></div>
+                    </div>
+                    <div class="card-stat flex items-center justify-between">
+                        <div>
+                            <p style="color: var(--slate-400); font-size: 0.75rem; font-weight: bold; text-transform: uppercase;">Partidos</p>
+                            <p style="font-size: 1.5rem; font-weight: bold; color: white;">{{vetor.length}}</p>
+                        </div>
+                        <div class="p-2" style="background-color: var(--slate-800); border-radius: 0.5rem; color: var(--slate-400);"></div>
+                    </div>
+                    <div class="card-stat md:col-span-2 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2" style="background-color: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 0.5rem; color: var(--amber-500);">
+                                <span class="material-symbols-outlined">encrypted</span>
+                            </div>
+                            <div>
+                                <p style="color: var(--amber-500); font-size: 0.875rem; font-weight: bold; text-transform: uppercase;">Modo Seguro Ativo</p>
+                                <p style="font-size: 0.75rem; color: var(--slate-400);">Visualização de votos desabilitada para todos os usuários.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulário Candidato -->
+                    <form [formGroup]="formulario" style="grid-column: span 4;">
+                        @if (formulario.get('nome')?.hasError('required') && formulario.get('nome')?.touched) {
+                            <p class="alert alert-warning" style="color: var(--amber-500);">O nome é obrigatório</p>
+                        }
+                        @if (formulario.get('nome')?.hasError('minlength') && formulario.get('nome')?.touched) {
+                            <p class="alert alert-warning" style="color: var(--amber-500);">O campo nome precisa conter pelo menos 4 caracteres.</p>
+                        }
+                        <input type="text" formControlName="nome" placeholder="Nome do candidato" class="search-input">
+
+                        @if (formulario.get('idade')?.hasError('required') && formulario.get('idade')?.touched) {
+                            <p class="alert alert-warning" style="color: var(--amber-500);">A idade é obrigatória</p>
+                        }
+                        @if (formulario.get('idade')?.hasError('min') && formulario.get('idade')?.touched) {
+                            <p class="alert alert-warning" style="color: var(--amber-500);">O Candidato deve conter pelo menos 35 ANOS.</p>
+                        }
+                        <input type="number" formControlName="idade" placeholder="Idade do candidato" class="search-input">
+
+                        @if (formulario.get('descricao')?.hasError('required') && formulario.get('descricao')?.touched) {
+                            <p class="alert alert-warning" style="color: var(--amber-500);">A descrição é obrigatória</p>
+                        }
+                        @if (formulario.get('descricao')?.hasError('minlength') && formulario.get('descricao')?.touched) {
+                            <p class="alert alert-warning" style="color: var(--amber-500);">O campo descrição precisa conter pelo menos 20 caracteres.</p>
+                        }
+                        <input type="text" formControlName="descricao" placeholder="Descrição" class="search-input">
+
+                        @if (formulario.get('partido')?.hasError('required') && formulario.get('partido')?.touched) {
+                            <p class="alert alert-warning" style="color: var(--amber-500);">O partido é obrigatório</p>
+                        }
+                        @if (formulario.get('partido')?.hasError('minlength') && formulario.get('partido')?.touched) {
+                            <p class="alert alert-warning" style="color: var(--amber-500);">O campo partido precisa conter pelo menos 3 caracteres.</p>
+                        }
+                        <input type="text" formControlName="partido" placeholder="Partido" class="search-input">
+
+                        @if (formulario.get('abrevpartido')?.hasError('required') && formulario.get('abrevpartido')?.touched) {
+                            <p class="alert alert-warning" style="color: var(--amber-500);">A abreviatura do partido é obrigatória</p>
+                        }
+                        @if (formulario.get('abrevpartido')?.hasError('maxlength') && formulario.get('abrevpartido')?.touched) {
+                            <p class="alert alert-warning" style="color: var(--amber-500);">O campo abreviatura do partido precisa conter no máximo 7 caracteres.</p>
+                        }
+                        <input type="text" formControlName="abrevpartido" placeholder="Abreviatura do partido" class="search-input">
+
+                        <!-- Campo cor -->
+                        <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                            <label for="cor" style="color: white; min-width: 100px;">Cor do Partido:</label>
+                            <input type="color" id="cor" formControlName="cor" style="width: 60px; height: 40px; cursor: pointer; border: 2px solid var(--slate-700); border-radius: 4px; background-color: transparent;">
+                            <span style="color: var(--slate-400);">Valor: {{ formulario.get('cor')?.value }}</span>
+                        </div>
+
+                        <!-- Campo foto -->
+                        <div style="margin-bottom: 15px;">
+                            <label for="foto" style="color: white; display: block; margin-bottom: 5px;">Foto do Candidato:</label>
+                            <input type="file" id="foto" (change)="onFileSelected($event)" accept="image/*" style="color: white; margin-bottom: 10px; width: 100%;">
+                            <div *ngIf="imagePreview" style="margin-top: 10px;">
+                                <img [src]="imagePreview" style="max-width: 100px; max-height: 100px; border-radius: 8px; border: 2px solid var(--slate-700);">
+                            </div>
+                        </div>
+
+                        <!-- Botões -->
+                        @if (botaos) {
+                            <input type="button" value="Cadastrar Candidato" (click)="cadastrar()" class="btn-secondary" [disabled]="formulario.invalid">
+                        } @else {
+                            <input type="button" value="Alterar Candidato" (click)="alterar()" class="btn-secondary" [disabled]="formulario.invalid">
+                            <input type="button" value="Eliminar Candidato" (click)="remover()" class="btn-secondary">
+                            <input type="button" value="Cancelar ação" (click)="cancelar()" class="btn-secondary">
+                        }
+                    </form>
+                </div>
+
+                <!-- Lista de Candidatos -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <div *ngFor="let v of vetor; index as indice" class="card-candidate" [style.border-left]="'5px solid ' + (v.cor || '#0d59f2')">
+                        <div class="p-6 flex flex-col gap-6 flex-1">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="profile-img" [style.background-image]="v.foto ? 'url(' + v.foto + ')' : 'url(https://via.placeholder.com/80)'" [style.background-size]="'cover'" [style.background-position]="'center'"></div>
+                                    <div>
+                                        <h3 style="color: white; font-weight: bold; font-size: 1.25rem;">{{indice + 1}}. {{v.nome}}</h3>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <div class="party-badge" [style.background-color]="v.cor || '#0d59f2'" [style.color]="'white'">{{v.abrevpartido}}</div>
+                                            <p style="color: var(--slate-400); font-size: 0.875rem;">{{v.partido}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="status-tag">{{v.idade}} anos</div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <p style="color: var(--slate-400); font-size: 0.875rem; line-height: 1.625;">{{v.descricao}}</p>
+                                <input type="button" value="Selecionar" (click)="selecionar(indice)" class="btn-secondary">
+                            </div>
+                        </div>
+                        <div class="locked-pattern" style="height: 7rem; position: relative; display: flex; align-items: center; justify-content: center; border-top: 1px solid rgba(51, 65, 85, 0.5);">
+                            <div class="locked-overlay"></div>
+                            <div class="z-10 flex flex-col items-center text-center px-4">
+                                <div style="background-color: var(--slate-800); padding: 0.5rem; border-radius: 9999px; margin-bottom: 0.5rem; border: 1px solid var(--slate-700);">
+                                    <span class="material-symbols-outlined" style="font-size: 1.5rem; color: var(--amber-500);">CANDIDATO</span>
+                                </div>
+                                <span style="font-size: 0.875rem; font-weight: bold; color: white; text-transform: uppercase;">Contagem Bloqueada</span>
+                                <span style="font-size: 10px; color: var(--slate-500); margin-top: 0.125rem;">Aguardando liberação oficial do CNE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Info -->
+                <div class="mt-8 p-6 flex flex-col sm:flex-row items-center justify-between gap-4" style="background-color: rgba(30, 41, 59, 0.2); border: 1px solid rgba(51, 65, 85, 0.5); border-radius: 0.75rem;">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined" style="color: var(--slate-400);">info</span>
+                        <p style="font-size: 0.875rem; color: var(--slate-400);">Os dados biográficos foram verificados em 12/08/2024. Qualquer alteração deve ser submetida via protocolo oficial.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
