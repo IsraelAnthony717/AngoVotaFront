@@ -9,7 +9,7 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-admcandidato',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, Menu, RouterLink],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink],
   templateUrl: './admcandidato.html',
   styleUrls: ['./admcandidato.css']
 })
