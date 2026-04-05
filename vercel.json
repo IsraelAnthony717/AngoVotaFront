@@ -1,5 +1,0 @@
-{
-  "buildCommand": "ng build --configuration=production",
-  "outputDirectory": "dist/Angular20",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-}
