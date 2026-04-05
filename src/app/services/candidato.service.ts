@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Pessoa } from '../models/Pessoa';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CandidatoService {
-  private apiUrl = `http://localhost:3003/candidatos`;    // ajuste se necessário
-  private votarUrl = `http://localhost:3003/votar`;
+  private apiUrl = `${environment.apiUrl}/candidatos`;
+  private votarUrl = `${environment.apiUrl}/votar`;
   private candidatosSubject = new BehaviorSubject<Pessoa[]>([]);
 
   candidatos$ = this.candidatosSubject.asObservable();

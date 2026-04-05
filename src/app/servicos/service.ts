@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-
-
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class Service {
-private apiWebauthn = 'http//localhost:3456/enviar'
+  private apiWebauthn = `${environment.apiUrl}/enviar`;
   constructor(private http: HttpClient){}
 
   async enviarOpcoes(numero_bi_enc: string){

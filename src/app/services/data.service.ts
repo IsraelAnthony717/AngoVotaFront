@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Eleitor, EleitorStats } from '../shared/interfaces/eleitor.interface';
 import { Candidato, CandidatoStats } from '../shared/interfaces/candidato.interface';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  private apiUrl = 'http://localhost:3000/api'; // URL base do seu backend Node.js
+  private apiUrl = `${environment.apiUrl}/api`; // URL base do seu backend Node.js
 
   constructor(private http: HttpClient) { }
 

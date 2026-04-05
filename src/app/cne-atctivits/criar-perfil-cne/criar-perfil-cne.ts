@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'criar-perfil-cne',
@@ -15,8 +16,7 @@ export class CriaPerfilCne {
   mensagem: string = '';
   loading = false;
 
-  // ⚠️ Ajusta para a tua rota real do backend
-  private apiUrl = 'http://localhost:3003/criarUsuario';
+  private apiUrl = `${environment.apiUrl}/criarUsuario`;
 
   constructor(private http: HttpClient) {}
 
