@@ -72,7 +72,7 @@ export class CandidatoService {
 
   // POST /votar
   votar(candidatoId: number): Observable<any> {
-    return this.http.post(this.votarUrl, { candidato_id: candidatoId }, { withCredentials: true }).pipe(
+    return this.http.post(this.votarUrl, { candidato_id: candidatoId }).pipe(
       tap(() => {
         // Após votar, recarrega a lista para atualizar a contagem de votos
         this.carregarCandidatos();

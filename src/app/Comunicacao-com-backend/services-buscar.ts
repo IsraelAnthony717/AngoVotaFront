@@ -77,15 +77,15 @@ export class ServicesBuscar {
   // ============================================================
 
   enviarBI(numeroBI: string): Observable<any> {
-    return this.http.post(`${this.api}/cne/auth`, { numeroBI }, { withCredentials: true });
+    return this.http.post(`${this.api}/cne/auth`, { numeroBI });
   }
 
   enviarKYC(kyc: boolean): Observable<any> {
-    return this.http.post(`${this.api}/cne/validarKYC`, { ativo: kyc }, { withCredentials: true });
+    return this.http.post(`${this.api}/cne/validarKYC`, { ativo: kyc });
   }
 
   mostrarPerfil(): Observable<any> {
-    return this.http.get(`${this.api}/criarUsuario`, { withCredentials: true });
+    return this.http.get(`${this.api}/criarUsuario`);
   }
 
   // ============================================================
@@ -118,18 +118,18 @@ export class ServicesBuscar {
 
   // GET /candidatos — Busca a lista de candidatos
   BuscarCandidatos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.api}/candidatos`, { withCredentials: true });
+    return this.http.get<any[]>(`${this.api}/candidatos`);
   }
 
   // POST /candidatos — Cria um candidato com foto e fundo (multipart/form-data)
   // NÃO definir Content-Type — o browser adiciona o boundary automaticamente
   CriarCandidato(formData: FormData): Observable<any> {
-    return this.http.post(`${this.api}/candidatos/criar`, formData, { withCredentials: true });
+    return this.http.post(`${this.api}/candidatos/criar`, formData);
   }
 
   // DELETE /candidatos/:id — Remove um candidato pelo ID
   ApagarCandidato(id: number): Observable<any> {
-    return this.http.delete(`${this.api}/candidatos/apagar/${id}`, { withCredentials: true });
+    return this.http.delete(`${this.api}/candidatos/apagar/${id}`);
   }
 
   // ============================================================
@@ -138,13 +138,13 @@ export class ServicesBuscar {
 
   // POST /votar — Regista o voto do eleitor autenticado
   Votar(candidato_id: number): Observable<any> {
-    return this.http.post(`${this.api}/votar`, { candidato_id }, { withCredentials: true });
+    return this.http.post(`${this.api}/votar`, { candidato_id });
   }
 
   validarBI(imagemFrente: string, imagemVerso: string): Observable<any> {
   const formData = new FormData();
   formData.append('frente', imagemFrente);
   formData.append('verso', imagemVerso);
-  return this.http.post(`${this.api}/ad/verify`, formData, { withCredentials: true });
+  return this.http.post(`${this.api}/ad/verify`, formData);
 }
 }

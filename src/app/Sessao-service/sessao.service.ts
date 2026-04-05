@@ -15,12 +15,12 @@ export class SessaoService {
   constructor(private httSession: HttpClient) { }
    /*
    verificarSessao(){
-      return this.httSession.get<{autenticado: boolean}>(`${environment.apiUrl}/sessao/validar`, {withCredentials: true})
+      return this.httSession.get<{autenticado: boolean}>(`${environment.apiUrl}/sessao/validar`)
     }
 
     */
     SessaoVerificar(){
-      return this.httSession.get<{autenticado: boolean}>(`${this.sessao}/sessao/validar`, {withCredentials: true})
+      return this.httSession.get<{autenticado: boolean}>(`${this.sessao}/sessao/validar`)
     }
 }
 

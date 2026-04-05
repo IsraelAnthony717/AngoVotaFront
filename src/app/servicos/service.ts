@@ -11,7 +11,7 @@ export class Service {
   constructor(private http: HttpClient){}
 
   async enviarOpcoes(numero_bi_enc: string){
-     return await firstValueFrom(this.http.post(`${this.apiWebauthn}/webauthn`, {numero_bi_enc}))
+     return await firstValueFrom(this.http.post(`${this.apiWebauthn}/webauthn`, { numero_bi_enc }))
   }
 
   async envarCredencial(numero_bi_enc: string, crededencial:any){

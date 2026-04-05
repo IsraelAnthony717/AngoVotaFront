@@ -14,7 +14,7 @@ export class CadastroService {
    async obterOptions(numero_bi_enc: string){
      try{
 
-       const enviar = await firstValueFrom(this.http.post(`${this.apiAuthentication}/enviar/webauthn`, {numero_bi_enc}, { withCredentials: true }))
+       const enviar = await firstValueFrom(this.http.post(`${this.apiAuthentication}/enviar/webauthn`, {numero_bi_enc}))
         return enviar;
      }
      catch(err: any){
@@ -75,7 +75,7 @@ export class CadastroService {
    async enviarCredencial(credencial: any){
 
      return await firstValueFrom(this.http.post(`${this.apiAuthentication}/enviar/webauthn/verificar`, {
-       credencial}, { withCredentials: true }))
+       credencial}))
    }
 
 }

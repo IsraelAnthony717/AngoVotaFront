@@ -15,7 +15,7 @@ export class LoginService {
 async iniciarLogin() {
 
   try{
-       const iniciar = await firstValueFrom(this.https.post(`${environment.apiUrl}/enviar/webauthn/iniciar-login`, { withCredentials: true }));
+       const iniciar = await firstValueFrom(this.https.post(`${environment.apiUrl}/enviar/webauthn/iniciar-login`, {}));
        return iniciar;
   }
   catch(err: any){
@@ -49,7 +49,7 @@ async iniciarLogin() {
 
 // Verificar login biométrico
 verificarLogin(assertion: any) {
-  return this.https.post(`${environment.apiUrl}/enviar/webauthn/verificar-login`, assertion, { withCredentials: true });
+  return this.https.post(`${environment.apiUrl}/enviar/webauthn/verificar-login`, assertion);
 }
 
 }

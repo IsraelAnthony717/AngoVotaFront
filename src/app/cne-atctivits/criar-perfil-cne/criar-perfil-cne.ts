@@ -32,7 +32,7 @@ export class CriaPerfilCne {
 
     this.http.post(this.apiUrl, {
       numero_bi: this.numero_bi
- }).subscribe({
+    }).subscribe({
       next: (res: any) => {
         this.mensagem = 'Perfil criado com sucesso';
         this.loading = false;
