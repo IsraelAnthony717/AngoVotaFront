@@ -32,35 +32,29 @@ export class Cnebi implements AfterViewInit, OnDestroy {
   }
 
   async capture() {
-    const video = this.video.nativeElement;
-    const canvas = this.canvas.nativeElement;
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    if (!ctx) return;
+  const video = this.video.nativeElement;
+  const canvas = this.canvas.nativeElement;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return;
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0);
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  ctx.drawImage(video, 0, 0);
 
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  // Captura a imagem como base64
+  const imageDataUrl = canvas.toDataURL('image/png');
 
-    if (this.step === 'front') {
-      this.frontImage = canvas.toDataURL('image/png');
-      if (!this.verificarDocumento(imageData, canvas.width, canvas.height)) {
-        this.statusMsg = "⚠️ Frente suspeita";
-      } else {
-        this.statusMsg = "✅ Frente válida";
-      }
-      this.step = 'back';
-    } else {
-      this.backImage = canvas.toDataURL('image/png');
-      if (!this.verificarDocumento(imageData, canvas.width, canvas.height)) {
-        this.statusMsg = "⚠️ Verso suspeito";
-      } else {
-        this.statusMsg = "✅ Verso válido";
-      }
-      this.stopCamera();
-    }
+  if (this.step === 'front') {
+    this.frontImage = imageDataUrl;
+    this.statusMsg = "✅ Frente capturada";
+    this.step = 'back';
+  } else {
+    this.backImage = imageDataUrl;
+    this.statusMsg = "✅ Verso capturado";
+    this.stopCamera();
   }
+}
+
 
   // 🔹 Função de verificação documental com limiares ajustados
   private verificarDocumento(imageData: ImageData, width: number, height: number): boolean {
@@ -99,10 +93,14 @@ export class Cnebi implements AfterViewInit, OnDestroy {
   }
 
   confirmarEnvio() {
-    //this.serviceEnviar.Dado
-    // sEnviados({ frente: this.frontImage, verso: this.backImage });
-    //this.rota.navigate(['/reconhecimento']);
-  }
+  this.serviceEnviar.enviarDocumentos(this.frontImage, this.backImage).subscribe({
+  next: (res) => {
+    this.serviceEnviar.setDocumento(res.dados);  // armazena os dados extraídos
+    this.rota.navigate(['/reconhecimento']);
+  },
+  error: (err) => this.statusMsg = "❌Erro ao validar documento"
+});
+}
 
 
 }

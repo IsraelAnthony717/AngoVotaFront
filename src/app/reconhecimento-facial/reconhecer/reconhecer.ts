@@ -69,10 +69,10 @@ kyc: boolean = false;
 
 
 constructor(private dadosService: ServiceEnviar, private rota: Router, private buscar: ServicesBuscar) {
-  this.dadosService.documento$.subscribe(img => {
-    console.log(img)
-    this.fotoBI = img as string | null;
-  });
+  this.dadosService.documento$.subscribe((img: any) => {
+  // img contém os dados do documento (ex: numero_bi, nome_completo, etc.)
+  console.log('Dados recebidos:', img);
+});
 }
 
 
