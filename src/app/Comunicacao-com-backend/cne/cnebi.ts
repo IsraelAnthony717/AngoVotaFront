@@ -22,20 +22,17 @@ export class Cnebi implements AfterViewInit, OnDestroy {
   backImage: string | null = null;
   statusMsg: string = "";
   enviando: boolean = false;
-  debugInfo: string = ""; // para mostrar detalhes do erro
+  debugInfo: string = ""; // para exibir detalhes do erro
 
   constructor(private serviceEnviar: ServiceEnviar, private rota: Router) {}
 
   async ngAfterViewInit() {
     try {
-      this.debugInfo = "Solicitando câmera...";
       this.stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: 'environment' } }
       });
       this.video.nativeElement.srcObject = this.stream;
-      this.debugInfo = "Câmera OK";
-    } catch (err: any) {
-      this.debugInfo = "Erro câmera: " + err.message;
+    } catch (err) {
       this.statusMsg = "❌ Erro ao acessar a câmera. Verifique as permissões.";
       console.error(err);
     }
@@ -51,20 +48,22 @@ export class Cnebi implements AfterViewInit, OnDestroy {
     canvas.height = video.videoHeight;
     ctx.drawImage(video, 0, 0);
 
-    const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    // Compressão imediata (resolução reduzida e qualidade menor)
+    const compressed = await this.compressImage(canvas.toDataURL('image/jpeg', 0.8), 500, 0.5);
 
     if (this.step === 'front') {
-      this.frontImage = imageDataUrl;
+      this.frontImage = compressed;
       this.statusMsg = "✅ Frente capturada. Agora tire a foto do verso.";
       this.step = 'back';
     } else {
-      this.backImage = imageDataUrl;
+      this.backImage = compressed;
       this.statusMsg = "✅ Verso capturado. Clique em 'Confirmar e Enviar'.";
       this.stopCamera();
     }
   }
 
-  private compressImage(base64: string, maxWidth: number = 800): Promise<string> {
+  // Compressão forte: reduz resolução e qualidade
+  private compressImage(base64: string, maxWidth: number = 500, quality: number = 0.5): Promise<string> {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
@@ -79,32 +78,30 @@ export class Cnebi implements AfterViewInit, OnDestroy {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx!.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', 0.7));
+        resolve(canvas.toDataURL('image/jpeg', quality));
       };
       img.src = base64;
     });
   }
 
   async confirmarEnvio() {
-    this.debugInfo = "";
     if (!this.frontImage || !this.backImage) {
       this.statusMsg = "⚠️ Capture ambas as faces do documento primeiro.";
       return;
     }
     this.enviando = true;
-    this.statusMsg = "📤 Comprimindo imagens...";
-    this.debugInfo = "Comprimindo...";
+    this.statusMsg = "📤 Enviando imagens...";
+    this.debugInfo = "";
 
     try {
-      const frenteComp = await this.compressImage(this.frontImage);
-      const versoComp = await this.compressImage(this.backImage);
-      this.debugInfo = `Tamanhos: frente=${(frenteComp.length/1024).toFixed(1)}KB, verso=${(versoComp.length/1024).toFixed(1)}KB`;
-      this.statusMsg = "📤 Enviando para o servidor...";
+      // Reforça a compressão antes do envio (garantia)
+      const frenteComp = await this.compressImage(this.frontImage, 500, 0.4);
+      const versoComp = await this.compressImage(this.backImage, 500, 0.4);
 
       this.serviceEnviar.enviarDocumentos(frenteComp, versoComp).subscribe({
         next: (res) => {
           this.enviando = false;
-          this.debugInfo = "Resposta recebida: " + JSON.stringify(res).substring(0, 200);
+          console.log('Resposta do backend:', res);
           if (res.dados) {
             this.serviceEnviar.setDocumento(res.dados);
           }
@@ -115,20 +112,22 @@ export class Cnebi implements AfterViewInit, OnDestroy {
         },
         error: (err) => {
           this.enviando = false;
-          let msg = "❌ Erro: ";
-          if (err.status === 404) msg += "Endpoint não encontrado (404)";
-          else if (err.status === 500) msg += "Erro interno no servidor (500)";
-          else if (err.status === 0) msg += "Sem conexão com o servidor";
-          else msg += err.statusText || err.message;
+          console.error('Erro completo:', err);
+          let msg = "❌ Erro ao validar documento. ";
+          if (err.status === 413) msg += "Imagem muito grande. Tente capturar de mais perto.";
+          else if (err.status === 404) msg += "Serviço indisponível.";
+          else if (err.status === 500) msg += "Erro interno no servidor.";
+          else msg += `Código ${err.status}. Verifique o console.`;
           this.statusMsg = msg;
-          this.debugInfo = `Detalhes: ${JSON.stringify(err)}`;
-          console.error(err);
+          // Exibe detalhes técnicos para debug
+          this.debugInfo = `Status: ${err.status} - ${err.message || err.statusText}`;
+          if (err.error) this.debugInfo += ` | Detalhe: ${err.error}`;
         }
       });
-    } catch (err: any) {
+    } catch (err) {
       this.enviando = false;
-      this.statusMsg = "❌ Erro ao processar imagens";
-      this.debugInfo = err.message;
+      this.statusMsg = "❌ Erro ao processar as imagens.";
+      this.debugInfo = String(err);
       console.error(err);
     }
   }
