@@ -52,15 +52,12 @@ export class ServiceEnviar {
   // HTTP — Envio das imagens do documento (frente/verso)
   // ============================================================
   enviarDocumentos(frente: string, verso: string): Observable<any> {
-    return this.http.post(`${this.api}/validar-documento`, { frente, verso }, { withCredentials: true });
-  }
+  return this.http.post(`${this.api}/validar-documento`, { frente, verso }, { withCredentials: true });
+}
 
-  // ============================================================
-  // Método para armazenar os dados do documento extraído
-  // ============================================================
-  setDocumento(dados: any) {
-    this.documentoSubject.next(dados);
-  }
+setDocumento(dados: any) {
+  this.documentoSubject.next(dados);
+}
 
   // ============================================================
   // Outros métodos HTTP (candidatos, votos, etc.)

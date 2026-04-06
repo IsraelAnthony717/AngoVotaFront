@@ -93,13 +93,25 @@ export class Cnebi implements AfterViewInit, OnDestroy {
   }
 
   confirmarEnvio() {
+  if (!this.frontImage || !this.backImage) {
+    this.statusMsg = "⚠️ Capture ambas as faces do documento primeiro.";
+    return;
+  }
   this.serviceEnviar.enviarDocumentos(this.frontImage, this.backImage).subscribe({
-  next: (res) => {
-    this.serviceEnviar.setDocumento(res.dados);  // armazena os dados extraídos
-    this.rota.navigate(['/reconhecimento']);
-  },
-  error: (err) => this.statusMsg = "❌Erro ao validar documento"
-});
+    next: (res) => {
+      console.log('Resposta do backend:', res);
+      // Armazena os dados extraídos (se houver) no serviço
+      if (res.dados) {
+        this.serviceEnviar.setDocumento(res.dados);
+      }
+      // Redireciona para a próxima página (reconhecimento facial)
+      this.rota.navigate(['/reconhecimento']);
+    },
+    error: (err) => {
+      console.error(err);
+      this.statusMsg = "❌ Erro ao validar documento. Tente novamente.";
+    }
+  });
 }
 
 
