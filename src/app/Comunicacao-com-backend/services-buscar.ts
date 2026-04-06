@@ -77,8 +77,8 @@ export class ServicesBuscar {
   // ============================================================
 
   enviarBI(numeroBI: string): Observable<any> {
-    return this.http.post(`${this.api}/cne/auth`, { numeroBI });
-  }
+  return this.http.post(`${this.api}/cne/auth`, { numeroBI }, { withCredentials: true });
+}
 
   enviarKYC(kyc: boolean): Observable<any> {
     return this.http.post(`${this.api}/cne/validarKYC`, { ativo: kyc });
