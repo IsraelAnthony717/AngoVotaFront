@@ -22,16 +22,20 @@ export class Cnebi implements AfterViewInit, OnDestroy {
   backImage: string | null = null;
   statusMsg: string = "";
   enviando: boolean = false;
+  debugInfo: string = ""; // para mostrar detalhes do erro
 
   constructor(private serviceEnviar: ServiceEnviar, private rota: Router) {}
 
   async ngAfterViewInit() {
     try {
+      this.debugInfo = "Solicitando câmera...";
       this.stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: 'environment' } }
       });
       this.video.nativeElement.srcObject = this.stream;
-    } catch (err) {
+      this.debugInfo = "Câmera OK";
+    } catch (err: any) {
+      this.debugInfo = "Erro câmera: " + err.message;
       this.statusMsg = "❌ Erro ao acessar a câmera. Verifique as permissões.";
       console.error(err);
     }
@@ -60,7 +64,6 @@ export class Cnebi implements AfterViewInit, OnDestroy {
     }
   }
 
-  // Compressão de imagem para evitar envio muito grande
   private compressImage(base64: string, maxWidth: number = 800): Promise<string> {
     return new Promise((resolve) => {
       const img = new Image();
@@ -83,22 +86,25 @@ export class Cnebi implements AfterViewInit, OnDestroy {
   }
 
   async confirmarEnvio() {
+    this.debugInfo = "";
     if (!this.frontImage || !this.backImage) {
       this.statusMsg = "⚠️ Capture ambas as faces do documento primeiro.";
       return;
     }
     this.enviando = true;
-    this.statusMsg = "📤 Enviando imagens...";
+    this.statusMsg = "📤 Comprimindo imagens...";
+    this.debugInfo = "Comprimindo...";
 
     try {
-      // Comprime as imagens antes de enviar
       const frenteComp = await this.compressImage(this.frontImage);
       const versoComp = await this.compressImage(this.backImage);
+      this.debugInfo = `Tamanhos: frente=${(frenteComp.length/1024).toFixed(1)}KB, verso=${(versoComp.length/1024).toFixed(1)}KB`;
+      this.statusMsg = "📤 Enviando para o servidor...";
 
       this.serviceEnviar.enviarDocumentos(frenteComp, versoComp).subscribe({
         next: (res) => {
           this.enviando = false;
-          console.log('Resposta do backend:', res);
+          this.debugInfo = "Resposta recebida: " + JSON.stringify(res).substring(0, 200);
           if (res.dados) {
             this.serviceEnviar.setDocumento(res.dados);
           }
@@ -109,16 +115,20 @@ export class Cnebi implements AfterViewInit, OnDestroy {
         },
         error: (err) => {
           this.enviando = false;
-          console.error('Erro no envio:', err);
-          let msg = "❌ Erro ao validar documento. Tente novamente.";
-          if (err.status === 404) msg = "❌ Serviço indisponível. Tente mais tarde.";
-          else if (err.status === 500) msg = "❌ Erro interno no servidor.";
+          let msg = "❌ Erro: ";
+          if (err.status === 404) msg += "Endpoint não encontrado (404)";
+          else if (err.status === 500) msg += "Erro interno no servidor (500)";
+          else if (err.status === 0) msg += "Sem conexão com o servidor";
+          else msg += err.statusText || err.message;
           this.statusMsg = msg;
+          this.debugInfo = `Detalhes: ${JSON.stringify(err)}`;
+          console.error(err);
         }
       });
-    } catch (err) {
+    } catch (err: any) {
       this.enviando = false;
-      this.statusMsg = "❌ Erro ao processar as imagens.";
+      this.statusMsg = "❌ Erro ao processar imagens";
+      this.debugInfo = err.message;
       console.error(err);
     }
   }
