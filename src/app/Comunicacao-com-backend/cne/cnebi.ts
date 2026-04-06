@@ -21,67 +21,106 @@ export class Cnebi implements AfterViewInit, OnDestroy {
   frontImage: string | null = null;
   backImage: string | null = null;
   statusMsg: string = "";
+  enviando: boolean = false;
 
   constructor(private serviceEnviar: ServiceEnviar, private rota: Router) {}
 
   async ngAfterViewInit() {
-    this.stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' } }
-    });
-    this.video.nativeElement.srcObject = this.stream;
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' } }
+      });
+      this.video.nativeElement.srcObject = this.stream;
+    } catch (err) {
+      this.statusMsg = "❌ Erro ao acessar a câmera. Verifique as permissões.";
+      console.error(err);
+    }
   }
 
   async capture() {
-  const video = this.video.nativeElement;
-  const canvas = this.canvas.nativeElement;
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
-  if (!ctx) return;
+    const video = this.video.nativeElement;
+    const canvas = this.canvas.nativeElement;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return;
 
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  ctx.drawImage(video, 0, 0);
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
 
-  // Captura a imagem como base64
-  const imageDataUrl = canvas.toDataURL('image/png');
+    const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
 
-  if (this.step === 'front') {
-    this.frontImage = imageDataUrl;
-    this.statusMsg = "✅ Frente capturada";
-    this.step = 'back';
-  } else {
-    this.backImage = imageDataUrl;
-    this.statusMsg = "✅ Verso capturado";
-    this.stopCamera();
+    if (this.step === 'front') {
+      this.frontImage = imageDataUrl;
+      this.statusMsg = "✅ Frente capturada. Agora tire a foto do verso.";
+      this.step = 'back';
+    } else {
+      this.backImage = imageDataUrl;
+      this.statusMsg = "✅ Verso capturado. Clique em 'Confirmar e Enviar'.";
+      this.stopCamera();
+    }
   }
-}
 
+  // Compressão de imagem para evitar envio muito grande
+  private compressImage(base64: string, maxWidth: number = 800): Promise<string> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx!.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.src = base64;
+    });
+  }
 
-  // 🔹 Função de verificação documental com limiares ajustados
-  private verificarDocumento(imageData: ImageData, width: number, height: number): boolean {
-    // 1. Contraste
-    let min = 255, max = 0;
-    for (let i = 0; i < imageData.data.length; i += 4) {
-      const brilho = (imageData.data[i] + imageData.data[i+1] + imageData.data[i+2]) / 3;
-      if (brilho < min) min = brilho;
-      if (brilho > max) max = brilho;
+  async confirmarEnvio() {
+    if (!this.frontImage || !this.backImage) {
+      this.statusMsg = "⚠️ Capture ambas as faces do documento primeiro.";
+      return;
     }
-    const contraste = max - min;
-    const contrasteOk = contraste > 20; // antes era 40
+    this.enviando = true;
+    this.statusMsg = "📤 Enviando imagens...";
 
-    // 2. Proporção
-    const proporcao = width / height;
-    const proporcaoOk = proporcao > 1.3 && proporcao < 1.8; // intervalo mais largo
+    try {
+      // Comprime as imagens antes de enviar
+      const frenteComp = await this.compressImage(this.frontImage);
+      const versoComp = await this.compressImage(this.backImage);
 
-    // 3. Bordas
-    let bordas = 0;
-    for (let i = 0; i < imageData.data.length - 4; i += 4) {
-      const brilho1 = (imageData.data[i] + imageData.data[i+1] + imageData.data[i+2]) / 3;
-      const brilho2 = (imageData.data[i+4] + imageData.data[i+5] + imageData.data[i+6]) / 3;
-      if (Math.abs(brilho1 - brilho2) > 40) bordas++; // antes era 50
+      this.serviceEnviar.enviarDocumentos(frenteComp, versoComp).subscribe({
+        next: (res) => {
+          this.enviando = false;
+          console.log('Resposta do backend:', res);
+          if (res.dados) {
+            this.serviceEnviar.setDocumento(res.dados);
+          }
+          this.statusMsg = "✅ Documento validado! Redirecionando...";
+          setTimeout(() => {
+            this.rota.navigate(['/reconhecimento']);
+          }, 1000);
+        },
+        error: (err) => {
+          this.enviando = false;
+          console.error('Erro no envio:', err);
+          let msg = "❌ Erro ao validar documento. Tente novamente.";
+          if (err.status === 404) msg = "❌ Serviço indisponível. Tente mais tarde.";
+          else if (err.status === 500) msg = "❌ Erro interno no servidor.";
+          this.statusMsg = msg;
+        }
+      });
+    } catch (err) {
+      this.enviando = false;
+      this.statusMsg = "❌ Erro ao processar as imagens.";
+      console.error(err);
     }
-    const bordasOk = bordas > (width * height * 0.005); // antes era 0.01
-
-    return contrasteOk && proporcaoOk && bordasOk;
   }
 
   stopCamera() {
@@ -91,28 +130,4 @@ export class Cnebi implements AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.stopCamera();
   }
-
-  confirmarEnvio() {
-  if (!this.frontImage || !this.backImage) {
-    this.statusMsg = "⚠️ Capture ambas as faces do documento primeiro.";
-    return;
-  }
-  this.serviceEnviar.enviarDocumentos(this.frontImage, this.backImage).subscribe({
-    next: (res) => {
-      console.log('Resposta do backend:', res);
-      // Armazena os dados extraídos (se houver) no serviço
-      if (res.dados) {
-        this.serviceEnviar.setDocumento(res.dados);
-      }
-      // Redireciona para a próxima página (reconhecimento facial)
-      this.rota.navigate(['/reconhecimento']);
-    },
-    error: (err) => {
-      console.error(err);
-      this.statusMsg = "❌ Erro ao validar documento. Tente novamente.";
-    }
-  });
-}
-
-
 }

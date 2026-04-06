@@ -11,7 +11,6 @@ export class ServiceEnviar {
   private socket: Socket;
   private api = environment.apiUrl;
 
-  // Subject para compartilhar os dados do documento entre componentes
   private documentoSubject = new BehaviorSubject<any>(null);
   public documento$ = this.documentoSubject.asObservable();
 
@@ -21,9 +20,7 @@ export class ServiceEnviar {
     this.socket.on('connect_error', (err) => console.log('Erro no socket:', err));
   }
 
-  // ============================================================
-  // SOCKETS — Dados em tempo real (opcional, mantenha se necessário)
-  // ============================================================
+  // ======================== SOCKETS ========================
   mostrarEleitoresEmTemporeal(): Observable<any> {
     return new Observable((observa) => {
       this.socket.on('totais_Eleitores', (dados) => observa.next(dados));
@@ -31,11 +28,9 @@ export class ServiceEnviar {
     });
   }
 
-  // ... (coloque aqui os outros métodos de socket que você já tinha, se houver)
+  // Adicione outros métodos de socket conforme necessário
 
-  // ============================================================
-  // HTTP — Autenticação e perfil
-  // ============================================================
+  // ======================== AUTENTICAÇÃO ========================
   enviarBI(numeroBI: string): Observable<any> {
     return this.http.post(`${this.api}/cne/auth`, { numeroBI }, { withCredentials: true });
   }
@@ -48,20 +43,16 @@ export class ServiceEnviar {
     return this.http.get(`${this.api}/criarUsuario`);
   }
 
-  // ============================================================
-  // HTTP — Envio das imagens do documento (frente/verso)
-  // ============================================================
+  // ======================== DOCUMENTOS ========================
   enviarDocumentos(frente: string, verso: string): Observable<any> {
-  return this.http.post(`${this.api}/validar-documento`, { frente, verso }, { withCredentials: true });
-}
+    return this.http.post(`${this.api}/validar-documento`, { frente, verso }, { withCredentials: true });
+  }
 
-setDocumento(dados: any) {
-  this.documentoSubject.next(dados);
-}
+  setDocumento(dados: any) {
+    this.documentoSubject.next(dados);
+  }
 
-  // ============================================================
-  // Outros métodos HTTP (candidatos, votos, etc.)
-  // ============================================================
+  // ======================== CANDIDATOS E VOTAÇÃO ========================
   BuscarCandidatos(): Observable<any[]> {
     return this.http.get<any[]>(`${this.api}/candidatos`);
   }
@@ -85,5 +76,24 @@ setDocumento(dados: any) {
     return this.http.post(`${this.api}/ad/verify`, formData);
   }
 
-  // ... (adicione aqui os outros métodos que você já tinha, como os de estatísticas)
+  // ======================== ESTATÍSTICAS ========================
+  getParticipacaoFaixaEtaria(): Observable<any> {
+    return this.http.get(`${this.api}/cne/MostrarEleitoresPorFaixaEtaria`);
+  }
+
+  getVotosPorHora(): Observable<any> {
+    return this.http.get(`${this.api}/cne/votos/hora`);
+  }
+
+  getVotosPorGenero(): Observable<any> {
+    return this.http.get(`${this.api}/cne/MostrarEleitoresPorGenero`);
+  }
+
+  getParticipacaoPorProvincia(): Observable<any> {
+    return this.http.get(`${this.api}/votos/provincia/contagem`);
+  }
+
+  totaisEleitoresProvincias(body: any): Observable<any[]> {
+    return this.http.post<any[]>(`${this.api}/cne/MostrarEleitoresAgregados`, { body });
+  }
 }
