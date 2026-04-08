@@ -11,8 +11,13 @@ export class ServiceEnviar {
   private socket: Socket;
   private api = environment.apiUrl;
 
+  // Subject para compartilhar os dados do documento
   private documentoSubject = new BehaviorSubject<any>(null);
   public documento$ = this.documentoSubject.asObservable();
+
+  // Subject para compartilhar a imagem da frente do BI
+  private imagemFrenteSubject = new BehaviorSubject<string | null>(null);
+  public imagemFrente$ = this.imagemFrenteSubject.asObservable();
 
   constructor(private http: HttpClient) {
     this.socket = io(environment.apiUrl, { withCredentials: true, transports: ['websocket', 'polling'] });
@@ -28,7 +33,7 @@ export class ServiceEnviar {
     });
   }
 
-  // Adicione outros métodos de socket conforme necessário
+  // ... (coloque aqui os outros métodos de socket que você já tinha)
 
   // ======================== AUTENTICAÇÃO ========================
   enviarBI(numeroBI: string): Observable<any> {
@@ -52,48 +57,14 @@ export class ServiceEnviar {
     this.documentoSubject.next(dados);
   }
 
+  setImagemFrente(base64: string) {
+    this.imagemFrenteSubject.next(base64);
+  }
+
   // ======================== CANDIDATOS E VOTAÇÃO ========================
   BuscarCandidatos(): Observable<any[]> {
     return this.http.get<any[]>(`${this.api}/candidatos`);
   }
 
-  CriarCandidato(formData: FormData): Observable<any> {
-    return this.http.post(`${this.api}/candidatos/criar`, formData);
-  }
-
-  ApagarCandidato(id: number): Observable<any> {
-    return this.http.delete(`${this.api}/candidatos/apagar/${id}`);
-  }
-
-  Votar(candidato_id: number): Observable<any> {
-    return this.http.post(`${this.api}/votar`, { candidato_id });
-  }
-
-  validarBI(imagemFrente: string, imagemVerso: string): Observable<any> {
-    const formData = new FormData();
-    formData.append('frente', imagemFrente);
-    formData.append('verso', imagemVerso);
-    return this.http.post(`${this.api}/ad/verify`, formData);
-  }
-
-  // ======================== ESTATÍSTICAS ========================
-  getParticipacaoFaixaEtaria(): Observable<any> {
-    return this.http.get(`${this.api}/cne/MostrarEleitoresPorFaixaEtaria`);
-  }
-
-  getVotosPorHora(): Observable<any> {
-    return this.http.get(`${this.api}/cne/votos/hora`);
-  }
-
-  getVotosPorGenero(): Observable<any> {
-    return this.http.get(`${this.api}/cne/MostrarEleitoresPorGenero`);
-  }
-
-  getParticipacaoPorProvincia(): Observable<any> {
-    return this.http.get(`${this.api}/votos/provincia/contagem`);
-  }
-
-  totaisEleitoresProvincias(body: any): Observable<any[]> {
-    return this.http.post<any[]>(`${this.api}/cne/MostrarEleitoresAgregados`, { body });
-  }
+  // ... (outros métodos existentes)
 }

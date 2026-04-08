@@ -39,28 +39,29 @@ export class Cnebi implements AfterViewInit, OnDestroy {
   }
 
   async capture() {
-    const video = this.video.nativeElement;
-    const canvas = this.canvas.nativeElement;
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    if (!ctx) return;
+  const video = this.video.nativeElement;
+  const canvas = this.canvas.nativeElement;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return;
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0);
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  ctx.drawImage(video, 0, 0);
 
-    // Compressão imediata (resolução reduzida e qualidade menor)
-    const compressed = await this.compressImage(canvas.toDataURL('image/jpeg', 0.8), 500, 0.5);
+  // Compressão imediata
+  const compressed = await this.compressImage(canvas.toDataURL('image/jpeg', 0.8), 600, 0.6);
 
-    if (this.step === 'front') {
-      this.frontImage = compressed;
-      this.statusMsg = "✅ Frente capturada. Agora tire a foto do verso.";
-      this.step = 'back';
-    } else {
-      this.backImage = compressed;
-      this.statusMsg = "✅ Verso capturado. Clique em 'Confirmar e Enviar'.";
-      this.stopCamera();
-    }
+  if (this.step === 'front') {
+    this.frontImage = compressed;
+    this.serviceEnviar.setImagemFrente(compressed); // 👈 SALVA A IMAGEM
+    this.statusMsg = "✅ Frente capturada. Agora tire a foto do verso.";
+    this.step = 'back';
+  } else {
+    this.backImage = compressed;
+    this.statusMsg = "✅ Verso capturado. Clique em 'Confirmar e Enviar'.";
+    this.stopCamera();
   }
+}
 
   // Compressão forte: reduz resolução e qualidade
   private compressImage(base64: string, maxWidth: number = 500, quality: number = 0.5): Promise<string> {
