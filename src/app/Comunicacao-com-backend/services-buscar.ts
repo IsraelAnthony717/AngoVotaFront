@@ -147,4 +147,11 @@ export class ServicesBuscar {
   formData.append('verso', imagemVerso);
   return this.http.post(`${this.api}/ad/verify`, formData);
 }
+
+
+
+
+enviarSelfie(selfieBase64: string): Observable<any> {
+  return this.http.post(`${this.api}/reconhecer`, { selfie: selfieBase64 }, { withCredentials: true });
+}
 }
