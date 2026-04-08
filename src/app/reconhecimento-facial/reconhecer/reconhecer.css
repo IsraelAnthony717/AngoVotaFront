@@ -585,3 +585,154 @@
         padding: 0 14px;
     }
 }
+
+
+
+
+
+
+
+/* Painel de erros flutuante */
+.error-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 320px;
+  max-height: 300px;
+  background: #1e1e2f;
+  color: #ffcc88;
+  border-left: 4px solid #ff5555;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 9999;
+  font-family: monospace;
+  font-size: 12px;
+  overflow-y: auto;
+  backdrop-filter: blur(4px);
+}
+
+.error-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #2a2a3b;
+  border-bottom: 1px solid #444;
+  font-weight: bold;
+}
+
+.error-header button {
+  background: #ff5555;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px 8px;
+}
+
+.error-list {
+  padding: 8px 12px;
+}
+
+.error-item {
+  border-bottom: 1px solid #444;
+  padding: 4px 0;
+  word-break: break-word;
+}
+
+/* Garantir que a webcam tenha tamanho */
+.webcam-liveness-container {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  background: #000;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+webcam {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+
+
+
+
+
+
+
+
+
+.error-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 320px;
+  max-height: 300px;
+  background: #1e1e2f;
+  color: #ffcc88;
+  border-left: 4px solid #ff5555;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 9999;
+  font-family: monospace;
+  font-size: 12px;
+  overflow-y: auto;
+  backdrop-filter: blur(4px);
+}
+
+.error-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #2a2a3b;
+  border-bottom: 1px solid #444;
+  font-weight: bold;
+}
+
+.error-header button {
+  background: #ff5555;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px 8px;
+}
+
+.error-list {
+  padding: 8px 12px;
+}
+
+.error-item {
+  border-bottom: 1px solid #444;
+  padding: 4px 0;
+  word-break: break-word;
+}
+
+.webcam-liveness-container {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  background: #000;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+webcam {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sucesso {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.erro {
+  color: #f44336;
+  font-weight: bold;
+}
