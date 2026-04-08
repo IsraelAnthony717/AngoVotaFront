@@ -61,11 +61,20 @@ export class Reconhecer implements OnInit, OnDestroy {
     this.triggerSubject.next();
   }
 
-  minhaSelfie(event: WebcamImage) {
-    console.log('Selfie', event);
-    this.adicionarErro(`📸 Selfie capturada às ${new Date().toLocaleTimeString()}`);
-    // enviar para backend...
-  }
+ minhaSelfie(event: WebcamImage) {
+  console.log('[SELFIE] Capturada com sucesso', event);
+  this.adicionarErro('Selfie obtida – processando simulado...');
+
+  // SIMULAÇÃO: apenas aguarda 1 segundo e loga (sem chamar backend)
+  setTimeout(() => {
+    console.log('[SELFIE] Simulação de reconhecimento concluída após 1s');
+    this.adicionarErro('✅ Simulação: reconhecimento OK (nenhum backend chamado)');
+
+    // IMPORTANTE: se houver redirecionamento automático para a tela do BI,
+    // ele provavelmente está em outro lugar (ex: no subscribe de um Observable real).
+    // Comente qualquer linha como: this.router.navigate(['/bi']) ou similar.
+  }, 1000);
+}
 
   IniciarLiveness() {
     this.aparecer = true;
@@ -97,4 +106,22 @@ export class Reconhecer implements OnInit, OnDestroy {
   limparErros() {
     this.erros = [];
   }
+
+
+
+  ngAfterViewInit() {
+  // Intercepta qualquer navegação programática
+  const originalNavigate = (window as any).location?.href;
+  console.log('Monitorando navegações...');
+}
+
+constructor() {
+  const originalError = console.error;
+  console.error = (...args) => {
+    if (args[0]?.includes('navigate') || args[0]?.includes('router')) {
+      this.adicionarErro('⚠️ Possível navegação detectada: ' + args[0]);
+    }
+    originalError.apply(console, args);
+  };
+}
 }
