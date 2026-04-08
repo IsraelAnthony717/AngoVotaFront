@@ -78,17 +78,30 @@ constructor(private dadosService: ServiceEnviar, private rota: Router, private b
 
 
   async ngOnInit() {
-
   // Configurações para o FaceAPI
-  await faceapi.tf.setBackend('cpu'); //Configuração para sistemas lentos
+  await faceapi.tf.setBackend('cpu');
   await faceapi.tf.ready();
 
-  const MODEL_URL = 'https://cdn.jsdelivr.net/gh/cgarciagl/face-api.js/weights'; //Busca o faceAPI pela cdn
-  // Buscando cada modulo
+  const MODEL_URL = 'https://cdn.jsdelivr.net/gh/cgarciagl/face-api.js/weights';
   await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
   await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
   await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
   await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+
+  // Recupera a imagem da frente do BI do serviço
+  this.dadosService.imagemFrente$.subscribe(img => {
+    if (img) {
+      this.fotoBI = img;
+      console.log('Imagem do BI carregada no reconhecimento');
+    } else {
+      console.warn('Nenhuma imagem do BI encontrada');
+    }
+  });
+
+  // Recupera os dados extraídos (opcional)
+  this.dadosService.documento$.subscribe((img: any) => {
+    console.log('Dados recebidos:', img);
+  });
 }
 
 
